@@ -1,4 +1,6 @@
 <?php
+
+
 function show($status, $message = 'error', $data = [], $httpStatus = 200)
 {
     $result = [
