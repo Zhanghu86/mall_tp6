@@ -3,39 +3,37 @@
 namespace app\admin\business;
 
 use app\common\model\mysql\AdminUser as AdminUserModel;
-use Exception;
+use think\Exception;
 
 class AdminUser {
 
     public static function login($data){
-        try {
-            $adminUserObj = new AdminUserModel();
-            $adminUser = self::getAdminUserByUserName($data['username']);
-            if(empty($adminUser)){
-                throw new Exception("不存在该用户");
-            }            
-            if($adminUser['password'] != md5($data['password']."_mall_tp6"))
-            {
-                throw new Exception("密码错误");
-                //return show(config("status.error"), "密码错误");   
-            }
+        //try {} catch() {} 一加上就报错
+        //try {
+                $adminUserObj = new AdminUserModel();    
 
-            $updateData = [
-                'last_login_time' => time(),
-                'last_login_ip' => request()->ip(),
-            ];
-            //var_dump($adminUser);
-            $res = $adminUserObj->updateById($adminUser['id'], $updateData);
-            if(empty($res))
-            {
-                throw new Exception("更新失败");
-                //return show(config("status.error"), "更新失败"); 
-            }
-            
-        } catch (\Exception $e){
-            throw new Exception("内部异常，登录失败");
-            //return show(config("status.error"), "内部异常，登录失败");
-        } 
+                $adminUser = self::getAdminUserByUserName($data['username']);
+                //var_dump($adminUser);
+                if(empty($adminUser)){
+                    throw new Exception("不存在该用户");
+                }            
+                if($adminUser['password'] != md5($data['password']."_mall_tp6"))
+                {
+                    throw new Exception("密码错误"); 
+                }                  
+                $updateData = [
+                    'last_login_time' => time(),
+                    'last_login_ip' => request()->ip(),
+                ];
+                //var_dump($adminUser);
+                $res = $adminUserObj->updateById($adminUser['id'], $updateData);
+                if(empty($res))
+                {
+                    throw new Exception("更新失败");
+                }           
+        // } catch (\Exception $e){
+        //     throw new Exception("内部异常，登录失败");
+        // } 
         //记录session
         session(config("admin.session_admin"), $adminUser);
         return true;  

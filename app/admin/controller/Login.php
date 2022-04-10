@@ -1,7 +1,6 @@
 <?php
 namespace app\admin\controller;
 
-
 use think\facade\View;
 
 
@@ -38,12 +37,15 @@ class Login extends AdminBase
         //     return show(config("status.error"),"验证码不正确".$captcha);
         // }
         // 2、TP6 validate验证机制   
-        $data = ['username' => $username, 'password' => $password, 'captcha' => $captcha];
+        $data = [
+            'username' => $username, 
+            'password' => $password,
+            'captcha' => $captcha,
+        ];
         $validate = new \app\admin\validate\AdminUser();
         if(!$validate->check($data)){
             return show(config("status.error"), $validate->getError());
         }
-
         try {
             $result = \app\admin\business\AdminUser::login($data);
         } catch (\Exception $e){

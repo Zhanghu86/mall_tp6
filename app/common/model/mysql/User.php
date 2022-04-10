@@ -2,19 +2,20 @@
 
 namespace app\common\model\mysql;
 
-//use think\console\command\make\Model;
 use think\Model;
 
-class AdminUser extends Model
+class User extends Model
 {
-    public function getAdminUserByUserName($username)
+
+    public function getUserByPhoneNumber($phoneNumber)
     {
-        if(empty($username))
+        if(empty($phoneNumber))
         {
             return false;
         }
+
         $where = [
-            "username" => trim($username),
+            "phone_number" => trim($phoneNumber),
         ];
         
         $result =$this->where($where)->find();
@@ -29,9 +30,11 @@ class AdminUser extends Model
         {
             return false;
         }
+
         $where = [
             'id' => $id,
         ];
+
         return $this->where($where)->save($data);
 
     }
