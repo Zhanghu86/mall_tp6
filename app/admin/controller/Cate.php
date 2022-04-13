@@ -1,9 +1,9 @@
 <?php
 namespace app\admin\controller;
 
-use app\admin\controller\Cate as ControllerCate;
 use think\facade\View;
 use app\common\business\Cate as CateBus;
+use app\common\lib\Status as StatusLib;
 
 class Cate extends AdminBase
 {
@@ -14,13 +14,14 @@ class Cate extends AdminBase
             "pid" => $pid,
         ];
         try {
-            $cates = (new CateBus())->getLists($data, 1);   
+            $cates = (new CateBus())->getLists($data, 3);   
         } catch (\Exception $e) {
             $cates = [];    
         }
         //halt($cates);
         return View::fetch("", [
             "cates" => $cates,
+            "pid" => $pid
         ]);
     }
 
@@ -41,6 +42,26 @@ class Cate extends AdminBase
         }else{
             return show(config("status.error"), "排序失败");
         }
+    }
+
+    public function status(){
+        $id = input("param.id", 0, "intval");
+        $status = input("param.status", 0, "intval");
+        if(!$id || !in_array($status, StatusLib::getTableStatus())){
+            return show(config("status.error"), "参数错误");
+        }
+        try {
+            $res = (new CateBus())->status($id, $status);
+        } catch (\Exception $e) {
+            return show(config("status.error"), $e->getMessage());
+        }
+        //var_dump($res);
+        if($res){
+            return show(config("status.success"), "状态更新成功");
+        }else{
+            return show(config("status.error"), "状态更新失败");
+        }
+
     }
 
     public function add()

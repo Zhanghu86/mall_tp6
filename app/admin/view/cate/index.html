@@ -70,13 +70,13 @@
                     <td>{$vo.create_time}</td>
                     <td>{$vo.update_time}</td>
                     <td>{$vo.operate_user}</td>
-                    <td data-id="1">
-                        <input type="checkbox" {if $vo.status == 1} checked {/if} name="status" lay-skin="switch" lay-filter="switchTest" lay-text="ON|OFF">
+                    <td data-id="{$vo.id}">
+                        <input type="checkbox" {if $vo.status == 1} checked {/if} name="status" lay-skin="switch" lay-filter="switchStatus" lay-text="ON|OFF">
                     </td>
                     <td>
-                        <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete del-child" data-ptype="1"
+                        <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete delete" data-ptype="1"
                            lay-event="delete" data-id="{$vo.id}">删除</a>
-                        <a href="{:url('index', ['pid' => $vo.pid])}">获取子栏目</a>   
+                        <a class="layui-btn layui-btn-xs layui-btn-normal" href="{:url('cate/index', ['pid' => $vo.id])}">子栏目 ({$vo.childCount})</a>   
                     </td>
                 </tr>
                 {/volist}
@@ -113,7 +113,7 @@
             , layout: ['count', 'prev', 'page', 'next', 'skip'] 
             ,jump: function(obj, first){
                 if(!first){
-                    location.href="?page="+obj.curr;//跳转链接
+                    location.href="?pid={$vo.pid}&page=" + obj.curr;//跳转链接
                 }
             }  
         });
@@ -125,15 +125,19 @@
         // });
 
         //监听状态 更改
-        form.on('switch(switchTest)', function (obj) {
-            console.log(obj.elem.checked, '改变状态')
+        form.on('switch(switchStatus)', function (obj) {
+            //console.log(obj.elem.checked, '改变状态')
 
             let id = obj.othis.parent().attr('data-id');
             let status = obj.elem.checked ? 1 : 0;
             $.ajax({
-                url: '{:url("admin/change")}?id=' + id + '&status=' + status,
+                url: '{:url("cate/status")}?id=' + id + '&status=' + status,
                 success: (res) => {
-
+                    if(res.status == 1){
+                        window.location.reload();
+                    }else{
+                        layer.msg("更新失败");
+                    }
                 }
             });
             return false;
@@ -164,22 +168,26 @@
             })
         }
 
-        // 删除二级分类
-        $('.del-child').on('click', function () {
+        // 删除分类
+        $('.delete').on('click', function () {
             let ptype = $(this).attr('data-ptype'); // fu
             let id = $(this).attr('data-id'); // fu
             let msg = '';
-            if (ptype == 1) { // 等级类目
-                msg = '一';
-            } else if (ptype == 2) {
-                msg = '二';
-            }
-            layObj.box(`是否删除${msg}级分类`, () => {
-                let   url = '{:url("admin/del")}?id=' + id
-                layObj.get(url,  (res) =>{
-                    $(this).parent().remove()
-                })
+            // if (ptype == 1) { // 等级类目
+            //     msg = '一';
+            // } else if (ptype == 2) {
+            //     msg = '二';
+            // }
+            layObj.box(`是否删除当前分类`, () => {
+                let   url = '{:url("cate/status")}?id=' + id + '&status=99'
+                layObj.get(url, function (res) {
 
+                    if(res.status == 1){
+                        window.location.reload();
+                    }else{
+                        layer.msg("删除失败");
+                    }
+                })
             })
         })
 
