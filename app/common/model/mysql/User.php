@@ -6,7 +6,7 @@ use think\Model;
 
 class User extends Model
 {
-
+    //phone_number 获取用户数据
     public function getUserByPhoneNumber($phoneNumber)
     {
         if(empty($phoneNumber))
@@ -23,6 +23,7 @@ class User extends Model
         return $result;
     }
 
+    //id 更新数据
     public function updateById($id, $data)
     {
         $id = intval($id);
@@ -37,5 +38,28 @@ class User extends Model
 
         return $this->where($where)->save($data);
 
+    }
+    //id 获取用户数据
+    public function getNormalUserById($id) {
+        $id = intval($id);
+        if(!$id) {
+            return false;
+        }
+        return $this->find($id);
+    }    
+    //username 获取用户数据
+    public function getNormalUserByUsername($username) {
+        if(empty($username))
+        {
+            return false;
+        }
+
+        $where = [
+            "username" => trim($username),
+        ];
+        
+        $result =$this->where($where)->find();
+        //echo $this->GetLastSql();
+        return $result;
     }
 }
