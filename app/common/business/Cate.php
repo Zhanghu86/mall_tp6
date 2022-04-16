@@ -100,4 +100,14 @@ class Cate {
         $cates = $cates->toArray();
         return $cates;
     }
+
+    public function getNormalAllCates(){
+        $field = "id as category_id, name, pid";
+        $cates = $this->model->getNormalCates($field);
+        if(!$cates){
+            $cates = [];
+        }
+        $cates = $cates->toArray();
+        return $cates;
+    }
 }
